@@ -1,6 +1,7 @@
+
+from __future__ import division, print_function
 import rospy
 import numpy as np
-import random
 from collections import deque
 from geometry_msgs.msg import PointStamped, Point
 from geometry_msgs.msg import PoseArray, Pose
@@ -41,7 +42,7 @@ class SimpleTrajectoryPredictor:
             self.trajectory_points.append((x, y))
             self.timestamps.append(timestamp)
             
-            rospy.loginfo(f"Received point: ({x:.2f}, {y:.2f}) at time {timestamp:.3f}")
+            rospy.loginfo("Received point: ({:.2f}, {:.2f}) at time {:.3f}".format(x, y, timestamp))
             
             # Predict trajectory if we have enough points
             if len(self.trajectory_points) >= 3:
@@ -49,7 +50,7 @@ class SimpleTrajectoryPredictor:
                 self.publish_prediction(predicted_trajectory)
                 
         except Exception as e:
-            rospy.logerr(f"Error in callback: {str(e)}")
+            rospy.logerr("Error in callback: {}".format(str(e)))
     
     def predict_trajectory(self):
         """
@@ -87,7 +88,7 @@ class SimpleTrajectoryPredictor:
             return predicted_points
             
         except Exception as e:
-            rospy.logerr(f"Error in trajectory prediction: {str(e)}")
+            rospy.logerr("Error in trajectory prediction: {}".format(str(e)))
             return []
     
     def polynomial_predict_trajectory(self):
@@ -118,7 +119,7 @@ class SimpleTrajectoryPredictor:
             return predicted_points
             
         except Exception as e:
-            rospy.logerr(f"Error in polynomial prediction: {str(e)}")
+            rospy.logerr("Error in polynomial prediction: {}".format(str(e)))
             return []
     
     def publish_prediction(self, predicted_points):
@@ -143,10 +144,10 @@ class SimpleTrajectoryPredictor:
                 pose_array.poses.append(pose)
             
             self.prediction_pub.publish(pose_array)
-            rospy.loginfo(f"Published {len(predicted_points)} predicted points")
+            rospy.loginfo("Published {} predicted points".format(len(predicted_points)))
             
         except Exception as e:
-            rospy.logerr(f"Error publishing prediction: {str(e)}")
+            rospy.logerr("Error publishing prediction: {}".format(str(e)))
     
     def get_trajectory_velocity(self):
         """
@@ -199,7 +200,7 @@ class SimpleTrajectoryPredictor:
             plt.show()
             
         except Exception as e:
-            rospy.logerr(f"Error in visualization: {str(e)}")
+            rospy.logerr("Error in visualization: {}".format(str(e)))
 
 def main():
     """
@@ -216,7 +217,7 @@ def main():
     except rospy.ROSInterruptException:
         rospy.loginfo("Trajectory predictor node interrupted")
     except Exception as e:
-        rospy.logerr(f"Error in main: {str(e)}")
+        rospy.logerr("Error in main: {}".format(str(e)))
 
 if __name__ == "__main__":
     main()
