@@ -22,12 +22,14 @@ class SimpleTrajectoryPredictor:
         self.window_size = 10  # Number of points to keep for prediction
         self.prediction_steps = 5  # Number of future steps to predict
         self.prediction_time_step = 0.1  # Time step for predictions (seconds)
-        self.goal_threshold = 0.5  # Minimum distance to send new goal (meters)
+        self.goal_threshold = 0.2  # Minimum distance to send new goal (meters)
         
         # Data storage
         self.trajectory_points = deque(maxlen=self.window_size)
         self.timestamps = deque(maxlen=self.window_size)
         self.last_goal_position = None
+        self.last_goal_time = 0.0  # Time when last goal was sent
+        self.goal_send_interval = 0.3  # Minimum interval between goals (seconds)
         
         # TF2 Buffer and Listener for coordinate transformations
         self.tf_buffer = tf2_ros.Buffer()
@@ -212,6 +214,11 @@ class SimpleTrajectoryPredictor:
             return
             
         try:
+            # Check time-based throttling (send goal only every 0.3 seconds)
+            current_time = rospy.Time.now().to_sec()
+            if current_time - self.last_goal_time < self.goal_send_interval:
+                return  # Don't send new goal if too soon since last one
+            
             # Use the first predicted point as the goal
             target_x, target_y = predicted_points[0]
             
@@ -251,6 +258,7 @@ class SimpleTrajectoryPredictor:
             # Send the goal
             self.move_base_client.send_goal(goal)
             self.last_goal_position = (target_x, target_y)
+            self.last_goal_time = current_time  # Update the time when goal was sent
             
             rospy.loginfo("Sent robot to predicted position: ({:.2f}, {:.2f})".format(target_x, target_y))
             

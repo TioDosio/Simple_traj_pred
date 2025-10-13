@@ -1,0 +1,1 @@
+rosbag record -O ~/rosbag_test.bag /tf /tf_static /odom /map /vizzy/r_camera/suppressed_image_rect_color_sd/compressed vizzy/r_camera/suppressed_image_rect_color_sd/camera_info /vizzy/l_camera/suppressed_image_rect_color_sd/compressed vizzy/l_camera/suppressed_image_rect_color_sd/camera_info /raw_bodies /goal_pose
